@@ -1,12 +1,652 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Simple Page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aayush Punia — Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --fg: #f0ede6;
+      --accent: #e8ff47;
+      --muted: #555;
+      --card: #111;
+      --border: #222;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'DM Mono', monospace;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--fg); }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 3rem 4rem;
+      position: relative;
+    }
+
+    .hero-tag {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.4s forwards;
+    }
+
+    .hero-title span {
+      color: var(--accent);
+      display: block;
+    }
+
+    .hero-desc {
+      max-width: 500px;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.6s forwards;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.8s forwards;
+    }
+
+    .btn {
+      padding: 0.8rem 2rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--fg);
+      border-color: var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--fg);
+    }
+
+    /* SCROLL INDICATOR */
+    .scroll-hint {
+      position: absolute;
+      bottom: 3rem;
+      right: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeUp 0.6s 1s forwards;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollLine 1.5s infinite;
+    }
+
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* GRID DECO */
+    .hero-grid {
+      position: absolute;
+      right: 3rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      opacity: 0.15;
+    }
+
+    .grid-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--fg);
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 6rem 3rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 3rem;
+    }
+
+    /* ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .about-text {
+      font-size: 0.8rem;
+      line-height: 2;
+      color: var(--muted);
+    }
+
+    .about-text p + p { margin-top: 1.5rem; }
+
+    .about-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+    }
+
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* SKILLS */
+    .skills-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .skill-tag {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--border);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+
+    .skill-tag:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* PROJECTS */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .project-card {
+      background: var(--bg);
+      padding: 2.5rem;
+      transition: background 0.2s;
+    }
+
+    .project-card:hover { background: var(--card); }
+
+    .project-num {
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-desc {
+      font-size: 0.75rem;
+      line-height: 1.8;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .project-tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.2rem 0.6rem;
+      opacity: 0.7;
+    }
+
+    /* CICD BADGE */
+    .cicd-banner {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .cicd-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .cicd-text {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .cicd-badge {
+      margin-left: auto;
+      padding: 0.3rem 0.8rem;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    /* CONTACT */
+    .contact-wrap {
+      max-width: 600px;
+    }
+
+    .contact-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 2rem;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid var(--border);
+    }
+
+    .contact-link {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      text-decoration: none;
+      color: var(--fg);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .contact-link:last-child { border-bottom: none; }
+    .contact-link:hover { background: var(--card); color: var(--accent); }
+
+    .contact-link span { color: var(--muted); font-size: 0.7rem; }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .hero { padding: 7rem 1.5rem 4rem; }
+      section { padding: 4rem 1.5rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .hero-grid { display: none; }
+      .scroll-hint { right: 1.5rem; }
+      footer { flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome</h1>
-    <p>This is a simple HTML page. for practical cicd</p>
+
+  <nav>
+    <div class="nav-logo">AP</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      Available for work
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-tag">// Big Data & AI Engineering Student</div>
+    <h1 class="hero-title">
+      Aayush<br>
+      <span>Punia.</span>
+    </h1>
+    <p class="hero-desc">
+      Building scalable data pipelines and intelligent systems. 
+      Exploring the intersection of Hadoop, cloud infrastructure, and machine learning.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+
+    <div class="hero-grid">
+      <!-- dots -->
+      <script>document.currentScript.outerHTML = Array(50).fill('<div class="grid-dot"></div>').join('')</script>
+    </div>
+
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      Scroll
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="section-label">// 01 — About</div>
+    <div class="about-grid">
+      <div>
+        <h2 class="about-title">Data Engineer in the Making</h2>
+        <div class="about-stats">
+          <div class="stat">
+            <div class="stat-number">2+</div>
+            <div class="stat-label">Years Coding</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">10+</div>
+            <div class="stat-label">Projects Built</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">AWS</div>
+            <div class="stat-label">Cloud Platform</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">CI/CD</div>
+            <div class="stat-label">DevOps Practice</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="about-text">
+          <p>
+            Currently pursuing Big Data engineering with a focus on Hadoop ecosystems, 
+            distributed computing, and HDFS architecture. I love turning raw data into 
+            meaningful insights.
+          </p>
+          <p>
+            Beyond academics, I participate in AI/ML hackathons, build self-hosted tools, 
+            and experiment with local LLMs. This very page is deployed via a GitHub Actions 
+            CI/CD pipeline to AWS S3.
+          </p>
+        </div>
+        <br>
+        <div class="skills-list">
+          <div class="skill-tag">Hadoop</div>
+          <div class="skill-tag">HDFS</div>
+          <div class="skill-tag">MapReduce</div>
+          <div class="skill-tag">AWS S3</div>
+          <div class="skill-tag">GitHub Actions</div>
+          <div class="skill-tag">Docker</div>
+          <div class="skill-tag">Python</div>
+          <div class="skill-tag">SQL</div>
+          <div class="skill-tag">Linux</div>
+          <div class="skill-tag">CI/CD</div>
+          <div class="skill-tag">n8n</div>
+          <div class="skill-tag">Ollama</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-label">// 02 — Projects</div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-num">001</div>
+        <div class="project-title">CI/CD Pipeline</div>
+        <p class="project-desc">
+          Automated deployment pipeline using GitHub Actions that pushes static websites 
+          directly to AWS S3 on every push to main branch.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">GitHub Actions</span>
+          <span class="project-tag">AWS S3</span>
+          <span class="project-tag">YAML</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-num">002</div>
+        <div class="project-title">Hadoop HDFS Lab</div>
+        <p class="project-desc">
+          Hands-on distributed file system setup covering HDFS commands, replication 
+          factors, permissions, and distributed data management across nodes.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Hadoop</span>
+          <span class="project-tag">HDFS</span>
+          <span class="project-tag">Ubuntu</span>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-num">003</div>
+        <div class="project-title">Local AI Setup</div>
+        <p class="project-desc">
+          Self-hosted AI infrastructure using Ollama with vision-language models and 
+          n8n automation workflows running via Docker on macOS.
+        </p>
+        <div class="project-tags">
+          <span class="project-tag">Ollama</span>
+          <span class="project-tag">Docker</span>
+          <span class="project-tag">n8n</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cicd-banner">
+      <div>
+        <div class="cicd-label">Deployed via CI/CD</div>
+        <div class="cicd-text">This page auto-deploys on every GitHub push → AWS S3</div>
+      </div>
+      <div class="cicd-badge">✓ Live</div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="section-label">// 03 — Contact</div>
+    <div class="contact-wrap">
+      <h2 class="contact-title">Let's Build Something.</h2>
+      <div class="contact-links">
+        <a href="mailto:aayush@example.com" class="contact-link">
+          Email <span>aayush@example.com →</span>
+        </a>
+        <a href="https://github.com/AayushPunia" class="contact-link">
+          GitHub <span>github.com/AayushPunia →</span>
+        </a>
+        <a href="https://linkedin.com" class="contact-link">
+          LinkedIn <span>Connect with me →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Aayush Punia</span>
+    <span>Deployed via GitHub Actions → AWS S3</span>
+  </footer>
+
 </body>
 </html>
