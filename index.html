@@ -1,652 +1,472 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aayush Punia — Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --bg: #0a0a0a;
-      --fg: #f0ede6;
-      --accent: #e8ff47;
-      --muted: #555;
-      --card: #111;
-      --border: #222;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      background: var(--bg);
-      color: var(--fg);
-      font-family: 'DM Mono', monospace;
-      overflow-x: hidden;
-    }
-
-    /* NOISE OVERLAY */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 999;
-      opacity: 0.4;
-    }
-
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem 3rem;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: var(--accent);
-      letter-spacing: -0.02em;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--fg); }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.7rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
-    }
-
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 8rem 3rem 4rem;
-      position: relative;
-    }
-
-    .hero-tag {
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.2s forwards;
-    }
-
-    .hero-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: clamp(3.5rem, 10vw, 8rem);
-      line-height: 0.95;
-      letter-spacing: -0.04em;
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.4s forwards;
-    }
-
-    .hero-title span {
-      color: var(--accent);
-      display: block;
-    }
-
-    .hero-desc {
-      max-width: 500px;
-      font-size: 0.85rem;
-      line-height: 1.8;
-      color: var(--muted);
-      margin-bottom: 3rem;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.6s forwards;
-    }
-
-    .hero-cta {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      opacity: 0;
-      animation: fadeUp 0.6s 0.8s forwards;
-    }
-
-    .btn {
-      padding: 0.8rem 2rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border: 1px solid;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
-      border-color: var(--accent);
-    }
-
-    .btn-primary:hover {
-      background: transparent;
-      color: var(--accent);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--fg);
-      border-color: var(--border);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--fg);
-    }
-
-    /* SCROLL INDICATOR */
-    .scroll-hint {
-      position: absolute;
-      bottom: 3rem;
-      right: 3rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--muted);
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      opacity: 0;
-      animation: fadeUp 0.6s 1s forwards;
-    }
-
-    .scroll-line {
-      width: 1px;
-      height: 50px;
-      background: linear-gradient(to bottom, var(--accent), transparent);
-      animation: scrollLine 1.5s infinite;
-    }
-
-    @keyframes scrollLine {
-      0% { transform: scaleY(0); transform-origin: top; }
-      50% { transform: scaleY(1); transform-origin: top; }
-      51% { transform: scaleY(1); transform-origin: bottom; }
-      100% { transform: scaleY(0); transform-origin: bottom; }
-    }
-
-    /* GRID DECO */
-    .hero-grid {
-      position: absolute;
-      right: 3rem;
-      top: 50%;
-      transform: translateY(-50%);
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      opacity: 0.15;
-    }
-
-    .grid-dot {
-      width: 3px; height: 3px;
-      border-radius: 50%;
-      background: var(--fg);
-    }
-
-    /* SECTIONS */
-    section {
-      padding: 6rem 3rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .section-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 3rem;
-    }
-
-    /* ABOUT */
-    .about-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4rem;
-      align-items: start;
-    }
-
-    .about-title {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: clamp(2rem, 4vw, 3.5rem);
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .about-text {
-      font-size: 0.8rem;
-      line-height: 2;
-      color: var(--muted);
-    }
-
-    .about-text p + p { margin-top: 1.5rem; }
-
-    .about-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-top: 3rem;
-    }
-
-    .stat {
-      border: 1px solid var(--border);
-      padding: 1.5rem;
-    }
-
-    .stat-number {
-      font-family: 'Syne', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--accent);
-    }
-
-    .stat-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 0.25rem;
-    }
-
-    /* SKILLS */
-    .skills-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-    }
-
-    .skill-tag {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--border);
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      transition: all 0.2s;
-    }
-
-    .skill-tag:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* PROJECTS */
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-    }
-
-    .project-card {
-      background: var(--bg);
-      padding: 2.5rem;
-      transition: background 0.2s;
-    }
-
-    .project-card:hover { background: var(--card); }
-
-    .project-num {
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 0.1em;
-      margin-bottom: 1.5rem;
-    }
-
-    .project-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 0.75rem;
-    }
-
-    .project-desc {
-      font-size: 0.75rem;
-      line-height: 1.8;
-      color: var(--muted);
-      margin-bottom: 1.5rem;
-    }
-
-    .project-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .project-tag {
-      font-size: 0.6rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 0.2rem 0.6rem;
-      opacity: 0.7;
-    }
-
-    /* CICD BADGE */
-    .cicd-banner {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      padding: 1.5rem 2rem;
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      margin-top: 3rem;
-      flex-wrap: wrap;
-    }
-
-    .cicd-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-
-    .cicd-text {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .cicd-badge {
-      margin-left: auto;
-      padding: 0.3rem 0.8rem;
-      background: var(--accent);
-      color: var(--bg);
-      font-size: 0.6rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-weight: 500;
-    }
-
-    /* CONTACT */
-    .contact-wrap {
-      max-width: 600px;
-    }
-
-    .contact-title {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.1;
-      margin-bottom: 2rem;
-    }
-
-    .contact-links {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-      border: 1px solid var(--border);
-    }
-
-    .contact-link {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem 1.5rem;
-      text-decoration: none;
-      color: var(--fg);
-      border-bottom: 1px solid var(--border);
-      font-size: 0.8rem;
-      transition: all 0.2s;
-    }
-
-    .contact-link:last-child { border-bottom: none; }
-    .contact-link:hover { background: var(--card); color: var(--accent); }
-
-    .contact-link span { color: var(--muted); font-size: 0.7rem; }
-
-    /* FOOTER */
-    footer {
-      padding: 2rem 3rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.65rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* RESPONSIVE */
-    @media (max-width: 768px) {
-      nav { padding: 1.2rem 1.5rem; }
-      .hero { padding: 7rem 1.5rem 4rem; }
-      section { padding: 4rem 1.5rem; }
-      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
-      .hero-grid { display: none; }
-      .scroll-hint { right: 1.5rem; }
-      footer { flex-direction: column; gap: 0.5rem; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cloud & DevOps Notes — Aayush Punia</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --paper: #fdf8f0;
+    --ink: #1a1a2e;
+    --blue: #2563eb;
+    --yellow: #fbbf24;
+    --green: #10b981;
+    --red: #ef4444;
+    --purple: #8b5cf6;
+    --orange: #f97316;
+    --ruled: #dbeafe;
+    --highlight: #fef9c3;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #e8e0d4;
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background-image: radial-gradient(circle at 20% 50%, rgba(37,99,235,0.05) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(139,92,246,0.05) 0%, transparent 50%);
+  }
+  .header { text-align: center; margin-bottom: 3rem; }
+  .header-title {
+    font-family: 'Caveat', cursive;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: var(--ink);
+    display: inline-block;
+  }
+  .header-title::after {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, var(--blue), var(--purple));
+    border-radius: 2px;
+    margin-top: 4px;
+  }
+  .header-sub { font-family: 'Caveat', cursive; font-size: 1.2rem; color: #666; margin-top: 0.5rem; }
+  .notebook {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .page {
+    background: var(--paper);
+    border-radius: 4px;
+    box-shadow: 3px 3px 12px rgba(0,0,0,0.15), -1px -1px 4px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+    padding: 2.5rem 2rem 2rem 3.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .page:hover { transform: translateY(-4px) rotate(0.3deg); box-shadow: 6px 8px 20px rgba(0,0,0,0.2); }
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(transparent, transparent 31px, var(--ruled) 31px, var(--ruled) 32px);
+    background-position: 0 48px;
+    pointer-events: none;
+  }
+  .page::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 2.8rem;
+    width: 2px;
+    background: rgba(239,68,68,0.3);
+    pointer-events: none;
+  }
+  .holes {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 1rem 0;
+  }
+  .hole { width: 14px; height: 14px; border-radius: 50%; background: #e8e0d4; border: 2px solid #ccc; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.2); }
+  .page-title {
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    z-index: 1;
+  }
+  .page-title.blue { border-color: var(--blue); color: var(--blue); }
+  .page-title.green { border-color: var(--green); color: var(--green); }
+  .page-title.purple { border-color: var(--purple); color: var(--purple); }
+  .page-title.orange { border-color: var(--orange); color: var(--orange); }
+  .page-title.red { border-color: var(--red); color: var(--red); }
+  .content { position: relative; z-index: 1; }
+  .note-list { list-style: none; font-family: 'Caveat', cursive; font-size: 1.05rem; line-height: 2; color: var(--ink); }
+  .note-list li { padding-left: 1.2rem; position: relative; }
+  .note-list li::before { content: '→'; position: absolute; left: 0; color: var(--blue); }
+  .note-list li.star::before { content: '★'; color: var(--yellow); }
+  .note-list li.check::before { content: '✓'; color: var(--green); }
+  .note-list li.num::before { content: attr(data-n); color: var(--purple); font-weight: 700; }
+  .note-list li.sub { padding-left: 2rem; font-size: 0.95rem; color: #444; }
+  .note-list li.sub::before { content: '•'; color: #aaa; }
+  .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.78rem; font-family: 'Space Grotesk', sans-serif; font-weight: 600; margin: 0.1rem; }
+  .tag-blue { background: #dbeafe; color: var(--blue); }
+  .tag-green { background: #d1fae5; color: #065f46; }
+  .tag-yellow { background: #fef9c3; color: #92400e; }
+  .tag-purple { background: #ede9fe; color: #5b21b6; }
+  .tag-red { background: #fee2e2; color: #991b1b; }
+  .tag-orange { background: #ffedd5; color: #9a3412; }
+  .hl { background: var(--highlight); padding: 0 3px; border-radius: 2px; }
+  .quote-box { border-left: 4px solid var(--blue); background: #eff6ff; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--ink); margin: 0.75rem 0; font-style: italic; }
+  .note-table { width: 100%; border-collapse: collapse; font-family: 'Caveat', cursive; font-size: 0.95rem; margin: 0.75rem 0; }
+  .note-table th { background: var(--ink); color: white; padding: 0.4rem 0.6rem; text-align: left; font-weight: 600; }
+  .note-table td { padding: 0.35rem 0.6rem; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .note-table tr:nth-child(even) td { background: #f8fafc; }
+  .divider { border: none; border-top: 1px dashed #ccc; margin: 0.75rem 0; }
+  .sticky { background: #fef9c3; padding: 0.75rem 1rem; border-radius: 4px; font-family: 'Caveat', cursive; font-size: 1rem; color: #78350f; margin: 0.75rem 0; box-shadow: 2px 3px 6px rgba(0,0,0,0.1); transform: rotate(-1deg); }
+  .section-lbl { font-family: 'Space Grotesk', sans-serif; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: #999; margin-bottom: 0.5rem; margin-top: 0.75rem; }
+  .git-flow { display: flex; align-items: center; gap: 0.3rem; font-family: 'Caveat', cursive; font-size: 0.85rem; padding: 0.5rem 0; flex-wrap: wrap; }
+  .git-box { background: white; border: 2px solid var(--ink); border-radius: 6px; padding: 0.3rem 0.6rem; text-align: center; font-weight: 600; white-space: nowrap; font-size: 0.8rem; }
+  .git-arrow { color: var(--blue); font-size: 1.2rem; flex-shrink: 0; }
+  .git-cmd { font-size: 0.65rem; color: var(--blue); display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 600; }
+  .devops-loop { display: flex; align-items: center; justify-content: center; gap: 0; margin: 1rem 0; font-family: 'Caveat', cursive; font-size: 0.9rem; }
+  .loop-side { color: white; border-radius: 50px; padding: 0.5rem 1rem; min-width: 90px; text-align: center; font-weight: 600; }
+  .loop-side.dev { background: var(--blue); }
+  .loop-side.ops { background: var(--green); }
+  .loop-steps { display: flex; flex-direction: column; gap: 0.2rem; padding: 0 0.5rem; font-size: 0.8rem; color: #555; text-align: center; }
+  .footer { text-align: center; margin-top: 3rem; font-family: 'Caveat', cursive; font-size: 1.1rem; color: #888; padding-bottom: 2rem; }
+  @media (max-width: 600px) { .notebook { grid-template-columns: 1fr; } body { padding: 1rem 0.5rem; } }
+</style>
 </head>
 <body>
 
-  <nav>
-    <div class="nav-logo">AP</div>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-    <div class="status-badge">
-      <div class="status-dot"></div>
-      Available for work
-    </div>
-  </nav>
+<div class="header">
+  <div class="header-title">☁️ Cloud & DevOps Notes</div>
+  <div class="header-sub">by Aayush Punia · LPU · 2026</div>
+</div>
 
-  <section class="hero">
-    <div class="hero-tag">// Big Data & AI Engineering Student</div>
-    <h1 class="hero-title">
-      Aayush<br>
-      <span>Punia.</span>
-    </h1>
-    <p class="hero-desc">
-      Building scalable data pipelines and intelligent systems. 
-      Exploring the intersection of Hadoop, cloud infrastructure, and machine learning.
-    </p>
-    <div class="hero-cta">
-      <a href="#projects" class="btn btn-primary">View Projects</a>
-      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
-    </div>
+<div class="notebook">
 
-    <div class="hero-grid">
-      <!-- dots -->
-      <script>document.currentScript.outerHTML = Array(50).fill('<div class="grid-dot"></div>').join('')</script>
+  <!-- 1: Cloud Computing -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title blue">☁️ Cloud Computing</div>
+    <div class="content">
+      <div class="section-lbl">// What is it?</div>
+      <ul class="note-list">
+        <li>All tasks done by a <span class="hl">virtual computer</span></li>
+        <li>Access through internet to compute task</li>
+        <li>All services accessible by computer in cloud</li>
+      </ul>
+      <hr class="divider"/>
+      <div class="section-lbl">// Services (Type of Work)</div>
+      <ul class="note-list">
+        <li class="num" data-n="①">IaaS — <span class="tag tag-blue">Infrastructure as a Service</span><br>Hardware, processors, core resources</li>
+        <li class="num" data-n="②">SaaS — <span class="tag tag-green">Software as a Service</span><br>Gmail — 0 to very less accessible</li>
+        <li class="num" data-n="③">PaaS — <span class="tag tag-purple">Platform as a Service</span><br>Dev tools, online compiler</li>
+        <li class="num" data-n="④">FaaS — <span class="tag tag-orange">Function as a Service</span><br>AWS Lambda, Firewall</li>
+      </ul>
     </div>
+  </div>
 
-    <div class="scroll-hint">
-      <div class="scroll-line"></div>
-      Scroll
+  <!-- 2: Deployment Models -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title purple">🏗️ Deployment Models</div>
+    <div class="content">
+      <div class="section-lbl">// Security Level</div>
+      <ul class="note-list">
+        <li class="num" data-n="①">Public — <span class="tag tag-blue">Access for all</span></li>
+        <li class="num" data-n="②">Private — <span class="tag tag-red">Authorized (username/pass)</span></li>
+        <li class="num" data-n="③">Protected — <span class="tag tag-orange">Categorical access</span></li>
+        <li class="num" data-n="④">Hybrid — <span class="tag tag-purple">Combination of 2 or more</span></li>
+        <li class="num" data-n="⑤">Community — <span class="tag tag-green">Shared by organisation · eg. Army</span></li>
+      </ul>
+      <div class="sticky">
+        eg. IRCTC:<br>
+        Train Schedule → Public<br>
+        PNR Status → Protected<br>
+        User Info → Private<br>
+        Login as Agent → Community
+      </div>
     </div>
-  </section>
+  </div>
 
-  <section id="about">
-    <div class="section-label">// 01 — About</div>
-    <div class="about-grid">
-      <div>
-        <h2 class="about-title">Data Engineer in the Making</h2>
-        <div class="about-stats">
-          <div class="stat">
-            <div class="stat-number">2+</div>
-            <div class="stat-label">Years Coding</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number">10+</div>
-            <div class="stat-label">Projects Built</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number">AWS</div>
-            <div class="stat-label">Cloud Platform</div>
-          </div>
-          <div class="stat">
-            <div class="stat-number">CI/CD</div>
-            <div class="stat-label">DevOps Practice</div>
-          </div>
+  <!-- 3: Why Cloud -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title green">🌐 Why We Need Cloud</div>
+    <div class="content">
+      <ul class="note-list">
+        <li>Remote Access</li>
+        <li>Scalability</li>
+        <li class="star">Cost Effective</li>
+        <li>Highly Available</li>
+        <li>Security on service provider</li>
+        <li class="star">Collaboration</li>
+        <li>Smooth Development / Deployment</li>
+        <li class="star">Data Backup</li>
+        <li>Pay as you go</li>
+      </ul>
+      <hr class="divider"/>
+      <div class="section-lbl">// How Cloud Works</div>
+      <div class="git-flow" style="justify-content:center;">
+        <div class="git-box">User</div>
+        <div class="git-arrow">→</div>
+        <div class="git-box">ISP<div class="git-cmd">Jio / Airtel</div></div>
+        <div class="git-arrow">→</div>
+        <div class="git-box">Server</div>
+        <div class="git-arrow">←</div>
+        <div class="git-box" style="background:#dbeafe;">Response</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Pay as you go + VM -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title orange">💰 Pay As You Go + VM</div>
+    <div class="content">
+      <table class="note-table">
+        <tr><th>Prepaid</th><th>Postpaid</th></tr>
+        <tr><td>Pre-built package</td><td>Pay for what you use</td></tr>
+        <tr><td>Cheaper</td><td>Comparatively costly</td></tr>
+        <tr><td>Manual scalability</td><td>Auto scalable</td></tr>
+        <tr><td>Small & medium</td><td>Large scale</td></tr>
+      </table>
+      <hr class="divider"/>
+      <div class="section-lbl">// Virtual Machine</div>
+      <ul class="note-list">
+        <li>Hosted VM — as an app software</li>
+        <li>Bare-Metal VM — connected to kernel</li>
+        <li>Works like OS (Docker, Java)</li>
+        <li>Also called <span class="tag tag-purple">Hypervisor</span></li>
+        <li>Virtualization = allocation of resources to user</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 5: DevOps -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title" style="color:#0f172a; border-color:#0f172a;">♾️ DevOps</div>
+    <div class="content">
+      <div class="devops-loop">
+        <div class="loop-side dev">Dev<br><small style="font-size:0.7rem">Code</small></div>
+        <div class="loop-steps">
+          <span>↑ Build, Test</span>
+          <span style="font-size:1.5rem">∞</span>
+          <span>↓ Release, Deploy</span>
+        </div>
+        <div class="loop-side ops">Ops<br><small style="font-size:0.7rem">Server</small></div>
+      </div>
+      <ul class="note-list">
+        <li>Multiple stages can function simultaneously</li>
+        <li>Leads to <span class="hl">automation of working cycle</span></li>
+        <li>Goal is <span class="hl">continuous improvement</span></li>
+      </ul>
+      <hr class="divider"/>
+      <div class="section-lbl">// Role of DevOps Engineer</div>
+      <ul class="note-list">
+        <li>Assure proper cycle function</li>
+        <li>Building <span class="tag tag-blue">CI/CD Pipeline</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6: DevOps Stages -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title blue">🛠️ DevOps Stages & Tools</div>
+    <div class="content">
+      <table class="note-table">
+        <tr><th>Stage</th><th>Purpose</th><th>Tool</th></tr>
+        <tr><td>Plan</td><td>Task tracking</td><td><span class="tag tag-blue">Jira</span></td></tr>
+        <tr><td>Code</td><td>Versioning</td><td><span class="tag tag-purple">GitLab</span></td></tr>
+        <tr><td>Build</td><td>Compilation</td><td><span class="tag tag-orange">Maven, Gradle</span></td></tr>
+        <tr><td>Test</td><td>Quality control</td><td><span class="tag tag-green">Selenium</span></td></tr>
+        <tr><td>Deploy</td><td>Hosting</td><td><span class="tag tag-red">Docker, Kubernetes</span></td></tr>
+        <tr><td>Monitor</td><td>Observing</td><td><span class="tag tag-blue">Prometheus, Grafana, CloudWatch</span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 7: AWS Services -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title orange">☁️ AWS Services</div>
+    <div class="content">
+      <div class="section-lbl">// ① Compute</div>
+      <ul class="note-list">
+        <li>EC2 — <span class="tag tag-blue">Full Access, Long Running</span> — managed by user</li>
+        <li>Lambda — <span class="tag tag-purple">Serverless, Event Triggered</span> — managed by AWS</li>
+      </ul>
+      <div class="section-lbl">// ② Storage</div>
+      <ul class="note-list">
+        <li>S3 — <span class="tag tag-green">Object Storage</span></li>
+        <li>EBS — <span class="tag tag-orange">Disk storage for EC2</span></li>
+      </ul>
+      <div class="section-lbl">// ③ Networking</div>
+      <ul class="note-list">
+        <li>VPC — <span class="tag tag-red">Virtual Private Cloud</span></li>
+        <li>Load Balancer — <span class="tag tag-blue">Distributed Traffic</span></li>
+      </ul>
+      <div class="section-lbl">// ④ Database</div>
+      <ul class="note-list">
+        <li>RDS — <span class="tag tag-purple">SQL Database</span></li>
+        <li>DynamoDB — <span class="tag tag-green">NoSQL</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 8: EC2 -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title orange">🖥️ EC2 — Elastic Compute Cloud</div>
+    <div class="content">
+      <div class="section-lbl">// What it does</div>
+      <ul class="note-list">
+        <li>Service providing Virtual Machine</li>
+        <li class="sub">Host websites</li>
+        <li class="sub">Run Backend API</li>
+        <li class="sub">ML Deploy</li>
+      </ul>
+      <hr class="divider"/>
+      <div class="section-lbl">// Components of EC2</div>
+      <ul class="note-list">
+        <li>Instance → <span class="tag tag-blue">VM</span></li>
+        <li>AMI → <span class="tag tag-purple">Amazon Machine Image (OS)</span></li>
+        <li>Instance Type → <span class="tag tag-green">t2-micro, M5 large</span></li>
+        <li>Key Pair → <span class="tag tag-orange">Public + Private Key</span></li>
+        <li>Security Group → <span class="tag tag-red">SSH Port-22, HTTP Port-80</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 9: IAM + Git -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title red">🔐 Security + Git & GitHub</div>
+    <div class="content">
+      <div class="section-lbl">// Security Policies</div>
+      <ul class="note-list">
+        <li>IAM Policy → <span class="hl">Rules apply to USER</span></li>
+        <li>Bucket Policy → <span class="hl">Rules apply to BUCKET</span></li>
+      </ul>
+      <hr class="divider"/>
+      <div class="section-lbl">// Git vs GitHub</div>
+      <table class="note-table">
+        <tr><th>Git</th><th>GitHub</th></tr>
+        <tr><td>Tool</td><td>Open Source Community</td></tr>
+        <tr><td>Version Control</td><td>Remote hosting</td></tr>
+      </table>
+      <div class="section-lbl">// Why Git?</div>
+      <ul class="note-list">
+        <li>Version controlling — tracking all development checkpoints</li>
+        <li>Collaboration</li>
+        <li>Safe storage</li>
+        <li>Automation</li>
+      </ul>
+      <div class="sticky" style="transform:rotate(1deg); font-size:0.85rem;">
+        Repository = folder · Directory = path · Stages = index
+      </div>
+    </div>
+  </div>
+
+  <!-- 10: Git Stages -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title purple">📂 Stages of Git</div>
+    <div class="content">
+      <div style="display:flex; flex-direction:column; gap:0.5rem; position:relative; z-index:1;">
+        <div class="git-box" style="background:#fef9c3; border-color:#f59e0b;">
+          Workspace (Working Directory)
+          <div class="git-cmd">file viewing & editing · changes untracked · undo won't work</div>
+        </div>
+        <div style="text-align:center; font-family:'Caveat',cursive; color:var(--blue); font-size:0.9rem;">↓ git add</div>
+        <div class="git-box" style="background:#d1fae5; border-color:#10b981;">
+          Staging Area (Index)
+          <div class="git-cmd">middle ground · no changes in file · sort necessary changes</div>
+        </div>
+        <div style="text-align:center; font-family:'Caveat',cursive; color:var(--blue); font-size:0.9rem;">↓ git commit</div>
+        <div class="git-box" style="background:#ede9fe; border-color:#8b5cf6;">
+          Local Repository (.git hidden folder)
+          <div class="git-cmd">once committed, work is permanently saved</div>
+        </div>
+        <div style="text-align:center; font-family:'Caveat',cursive; color:var(--blue); font-size:0.9rem;">↓ git push</div>
+        <div class="git-box" style="background:#fee2e2; border-color:#ef4444;">
+          Remote Repository (GitHub)
+          <div class="git-cmd">origin = local cache / bookmark of remote server</div>
         </div>
       </div>
-      <div>
-        <div class="about-text">
-          <p>
-            Currently pursuing Big Data engineering with a focus on Hadoop ecosystems, 
-            distributed computing, and HDFS architecture. I love turning raw data into 
-            meaningful insights.
-          </p>
-          <p>
-            Beyond academics, I participate in AI/ML hackathons, build self-hosted tools, 
-            and experiment with local LLMs. This very page is deployed via a GitHub Actions 
-            CI/CD pipeline to AWS S3.
-          </p>
-        </div>
-        <br>
-        <div class="skills-list">
-          <div class="skill-tag">Hadoop</div>
-          <div class="skill-tag">HDFS</div>
-          <div class="skill-tag">MapReduce</div>
-          <div class="skill-tag">AWS S3</div>
-          <div class="skill-tag">GitHub Actions</div>
-          <div class="skill-tag">Docker</div>
-          <div class="skill-tag">Python</div>
-          <div class="skill-tag">SQL</div>
-          <div class="skill-tag">Linux</div>
-          <div class="skill-tag">CI/CD</div>
-          <div class="skill-tag">n8n</div>
-          <div class="skill-tag">Ollama</div>
-        </div>
+    </div>
+  </div>
+
+  <!-- 11: Git Commands -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title green">⌨️ Git Commands</div>
+    <div class="content">
+      <div class="section-lbl">// Upload</div>
+      <ul class="note-list">
+        <li><span class="tag tag-blue">git add</span> — move to staging</li>
+        <li><span class="tag tag-blue">git commit</span> — save to local repo</li>
+        <li><span class="tag tag-blue">git push</span> — send to remote</li>
+      </ul>
+      <div class="section-lbl">// Download</div>
+      <ul class="note-list">
+        <li><span class="tag tag-green">git fetch</span> — get from remote</li>
+        <li><span class="tag tag-green">git merge</span> — combine branches</li>
+        <li><span class="tag tag-green">git pull</span> — fetch + merge</li>
+        <li><span class="tag tag-green">git rebase</span> — rewrite history, linear commits</li>
+        <li><span class="tag tag-green">git pull --rebase</span> — task similar to pull + linear</li>
+      </ul>
+      <div class="section-lbl">// Maintain</div>
+      <ul class="note-list">
+        <li><span class="tag tag-purple">git init</span> — initialize repo</li>
+        <li><span class="tag tag-purple">git config</span> — setup auth connection</li>
+        <li><span class="tag tag-purple">git status</span> — check current state</li>
+        <li><span class="tag tag-purple">git remote add</span> — connect local to remote</li>
+        <li><span class="tag tag-purple">git log --oneline</span> — see history</li>
+        <li><span class="tag tag-purple">git restore</span> — undo staging</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 12: CI/CD -->
+  <div class="page">
+    <div class="holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    <div class="page-title blue">🚀 CI / CD Pipeline</div>
+    <div class="content">
+      <div class="section-lbl">// Continuous Integration & Continuous Deployment</div>
+      <div class="quote-box">"If DevOps is philosophy, then CI/CD is the engine running it"</div>
+      <ul class="note-list">
+        <li><strong>CI</strong> — Practice to <span class="hl">merge code frequently</span><br>Stage 5, 6 — Build, Test</li>
+        <li><strong>CD</strong> — Practice to <span class="hl">push passed code directly to server</span><br>Stage 6 — Deploy</li>
+      </ul>
+      <hr class="divider"/>
+      <div class="section-lbl">// This Page IS a CI/CD Pipeline!</div>
+      <div class="git-flow" style="justify-content:center; font-size:0.8rem;">
+        <div class="git-box" style="background:#dbeafe;">Code Push<div class="git-cmd">GitHub</div></div>
+        <div class="git-arrow">→</div>
+        <div class="git-box" style="background:#d1fae5;">Actions<div class="git-cmd">Workflow</div></div>
+        <div class="git-arrow">→</div>
+        <div class="git-box" style="background:#ffedd5;">AWS S3<div class="git-cmd">Live!</div></div>
+      </div>
+      <div class="sticky" style="background:#d1fae5; color:#065f46; font-size:0.9rem; margin-top:0.75rem;">
+        ✅ This page was deployed via GitHub Actions → AWS S3 CI/CD!
       </div>
     </div>
-  </section>
+  </div>
 
-  <section id="projects">
-    <div class="section-label">// 02 — Projects</div>
-    <div class="projects-grid">
-      <div class="project-card">
-        <div class="project-num">001</div>
-        <div class="project-title">CI/CD Pipeline</div>
-        <p class="project-desc">
-          Automated deployment pipeline using GitHub Actions that pushes static websites 
-          directly to AWS S3 on every push to main branch.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">GitHub Actions</span>
-          <span class="project-tag">AWS S3</span>
-          <span class="project-tag">YAML</span>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="project-num">002</div>
-        <div class="project-title">Hadoop HDFS Lab</div>
-        <p class="project-desc">
-          Hands-on distributed file system setup covering HDFS commands, replication 
-          factors, permissions, and distributed data management across nodes.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Hadoop</span>
-          <span class="project-tag">HDFS</span>
-          <span class="project-tag">Ubuntu</span>
-        </div>
-      </div>
-      <div class="project-card">
-        <div class="project-num">003</div>
-        <div class="project-title">Local AI Setup</div>
-        <p class="project-desc">
-          Self-hosted AI infrastructure using Ollama with vision-language models and 
-          n8n automation workflows running via Docker on macOS.
-        </p>
-        <div class="project-tags">
-          <span class="project-tag">Ollama</span>
-          <span class="project-tag">Docker</span>
-          <span class="project-tag">n8n</span>
-        </div>
-      </div>
-    </div>
+</div>
 
-    <div class="cicd-banner">
-      <div>
-        <div class="cicd-label">Deployed via CI/CD</div>
-        <div class="cicd-text">This page auto-deploys on every GitHub push → AWS S3</div>
-      </div>
-      <div class="cicd-badge">✓ Live</div>
-    </div>
-  </section>
-
-  <section id="contact">
-    <div class="section-label">// 03 — Contact</div>
-    <div class="contact-wrap">
-      <h2 class="contact-title">Let's Build Something.</h2>
-      <div class="contact-links">
-        <a href="mailto:aayush@example.com" class="contact-link">
-          Email <span>aayush@example.com →</span>
-        </a>
-        <a href="https://github.com/AayushPunia" class="contact-link">
-          GitHub <span>github.com/AayushPunia →</span>
-        </a>
-        <a href="https://linkedin.com" class="contact-link">
-          LinkedIn <span>Connect with me →</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <span>© 2026 Aayush Punia</span>
-    <span>Deployed via GitHub Actions → AWS S3</span>
-  </footer>
+<div class="footer">✍️ Handwritten Notes → Digital · Aayush Punia · LPU · 2026</div>
 
 </body>
 </html>
